@@ -71,9 +71,6 @@ const leadRequestLoad = {
             value: '235689',
         },
     ],
-    policyholder: {
-        firstName: 'pedro',
-    },
     transport: 'EMAIL',
 }
 

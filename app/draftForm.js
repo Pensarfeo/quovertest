@@ -77,7 +77,7 @@ class Form extends BasicForm {
                 </Row>
                 <DropDown
                     reportValue = { this.getValue }
-                    options = { [ 'BMW 418d', 'Toyota avensis', ' Volkswagen Golf' ] }
+                    options = { [ 'BMW 418d', 'Toyota avensis', 'Volkswagen Golf' ] }
                     defaultValue = { this.props.vehicle || 'BMW 418d' }
                     id = "vehicle"
                     label = "Car Model"
