@@ -9,21 +9,28 @@ class BasicForm extends React.Component {
             error: false,
         }
         this.values = {}
+        this.eventHandlers = {
+            success: this.defaultHandleSuccess,
+            error: this.defaultHandleError,
+        }
     }
     componentDidUpdate(prevProvs, prevState) {
         const action = this.action || this.props.action
         if (!prevState.loading && this.state.loading) {
-            action(this.values, {}, this.defaultHandleSuccess, this.defaultHandleError)
+            action(this.values, {}, this.eventHandlers)
         }
     }
 
     componentWillUnmount() {
-        this.unmounted = true
+        delete this.eventHandlers.success
+        delete this.eventHandlers.error
     }
 
     getValue = (value, type) => {
         this.values[ type ] = value
     }
+
+    vaidatableFields = []
 
     validateFields = () => {
         this.vaidatableFields.forEach(field => field.isValid())

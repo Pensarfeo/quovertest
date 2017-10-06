@@ -10,10 +10,14 @@ const actions = {
     authentication: {},
 }
 
-actions.authentication.authenticate = (data = {}, params = {}, success, error) => (
+actions.authentication.authenticate = (data = {}, params = {}, handlers) => (
     axios.post('/authentication/authenticate', data, { params })
-        .then(success)
-        .catch(error)
+        .then((res) => {
+            if (handlers.success) return handlers.success(res)
+        })
+        .catch((res) => {
+            if (handlers.error) return handlers.error(res)
+        })
 )
 
 actions.authentication.logOut = () => {
@@ -22,23 +26,65 @@ actions.authentication.logOut = () => {
         .then(() => console.log('user logged out'))
 }
 
-actions.draft.create = (data = {}, params = {}, success, error) => {
+actions.draft.create = (data = {}, params = {}, handlers) => {
     axios.post('/be/motor/gap/drafts', createDraft(data))
         .then((response) => {
             actions.draft.add.dispatch(response.data)
-            actions.draft.priceRequest(response.data.draftId, {}, params, success, error)
+            actions.draft.priceRequest({ draftId: response.data.draftId }, params, handlers)
         })
-        .catch(error)
+        .catch((res) => {
+            if (handlers.error) return handlers.error(res)
+        })
 }
 
-actions.draft.priceRequest = (draftId, data = {}, params = {}, success, error) => {
-    axios.post(`/be/motor/gap/drafts/${ draftId }/price-requests`, createPriceRequest())
+actions.draft.update = (data = {}, params = {}, handlers) => {
+    axios.put(`/be/motor/gap/drafts/${ data.draftId }`, createDraft(data))
         .then((response) => {
-            response.data.draftId = draftId
-            actions.draft.priceRequest.add.dispatch(response.data)
-            success(response)
+            actions.draft.add.dispatch(response.data)
+            actions.draft.priceRequest(response.data.draftId, {}, params, handlers)
         })
-        .catch(error)
+        .catch((res) => {
+            if (handlers.error) return handlers.error(res)
+        })
+}
+
+actions.draft.priceRequest = (data = {}, params = {}, handlers) => {
+    axios.post(`/be/motor/gap/drafts/${ data.draftId }/price-requests`, createPriceRequest())
+        .then((response) => {
+            response.data.draftId = data.draftId
+            actions.draft.priceRequest.add.dispatch(response.data)
+            if (handlers.success) return handlers.success(response)
+        })
+        .catch((res) => {
+            if (handlers.error) return handlers.error(res)
+        })
+}
+
+const leadRequestLoad = {
+    partnerReference: [
+        {
+            key: 'salesId',
+            value: '12345678',
+        },
+        {
+            key: 'productId',
+            value: '235689',
+        },
+    ],
+    policyholder: {
+        firstName: 'pedro',
+    },
+    transport: 'EMAIL',
+}
+
+actions.draft.lead = (draftId, data = {}, params = {}, handlers) => {
+    axios.post(`/be/motor/gap/drafts/${ draftId }/leads`, leadRequestLoad)
+        .then((res) => {
+            if (handlers.success) return handlers.success(res)
+        })
+        .catch((res) => {
+            if (handlers.error) return handlers.error(res)
+        })
 }
 
 actions.draft.add = buildActionCreator('add', 'draft')

@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import Header from './header'
 import LogIn from './login'
-import DraftForm from './draftForm'
+import CreateDraft from './createDraft'
 import Drafts from './drafts'
 
 const App = ({ user }) => {
@@ -10,7 +10,7 @@ const App = ({ user }) => {
     return (
         <div>
             <Header />
-            <DraftForm />
+            <CreateDraft />
             <Drafts />
         </div>
     )
